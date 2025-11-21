@@ -10,10 +10,14 @@ log() {
 }
 
 MODULE_DIR="$(cd "$(dirname "$0")" && pwd)"
+SECRETS_FILE="$MODULE_DIR/tools/secrets.sh"
+export TOOLS_DIR="$MODULE_DIR/tools"
 
 log "Starting proxmox setup."
 
-for module in $(find "$MODULE_DIR" -mindepth 2 -type f -name "*.sh" | sort); do
+source $SECRETS_FILE
+
+for module in $(find "$MODULE_DIR/scripts" -mindepth 2 -type f -name "*.sh" | sort); do
 	log "Running module: $module"
 	bash "$module" 2>&1 | tee "$LOG_DIR/module.log"
 	status=${PIPESTATUS[0]}

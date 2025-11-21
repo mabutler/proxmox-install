@@ -3,7 +3,7 @@ set -euo pipefail
 
 export DEBIAN_FRONTEND=noninteractive
 
-PACKAGES="vim tmux git"
+PACKAGES="vim tmux git mergerfs inxi snapraid samba openssl"
 
 for pkg in $PACKAGES; do
     if ! dpkg -s "$pkg" >/dev/null 2>&1; then
