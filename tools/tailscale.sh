@@ -54,4 +54,6 @@ TAGS="${TAGS:+$TAGS; }tailscale"
 pct set "$CTID" -tags "$TAGS"
 
 msg_ok "Tailscale installed on CT $CTID"
-msg_info "Reboot the container, then run 'tailscale up' inside the container to activate."
+pct stop "$CTID" >/dev/null
+pct start "$CTID" >/dev/null
+pct exec "$CTID" -- tailscale up --authkey="${TAILSCALE_KEY}" >/dev/null 2>&1
