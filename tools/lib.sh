@@ -56,9 +56,11 @@ setup_samba_in_ct() {
 
     pct exec "$ctid" -- bash -c "mkdir -p /mnt/storage"
 
-    local hostIp=$(ip addr show vmbr0)
-    pct exec "$ctid" -- bash -c "grep -qF '//$hostIp/storage /mnt/storage ' /etc/fstab || echo '//$hostIp/storage /mnt/storage cifs credentials=/root/.smbcredentials,iocharset=utf8,file_mode=0775,dir_mode=0775,vers=3.0 0 0' >> /etc/fstab"
-
+    local hostIp=$(ip -4 -o addr show dev vmbr0 | awk '{print $4}' | cut -d/ -f1)
+    pct exec "$ctid" -- bash -c "
+    grep -q \"//$hostIp/storage\" /etc/fstab \
+        || echo \"//$hostIp/storage /mnt/storage cifs credentials=/root/.smbcredentials,iocharset=utf8,file_mode=0775,dir_mode=0775,vers=3.0 0 0\" >> /etc/fstab
+    "
     pct exec "$ctid" -- mount -a
 }
 
