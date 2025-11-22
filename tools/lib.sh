@@ -246,3 +246,8 @@ ensure_container_from_url() {
     # return CTID on stdout (use tolerant lookup)
     get_ctid_by_name "$name"
 }
+
+determine_ctid() {
+	ctid=$(pct list | awk -v n="$1" '$3==n{print $1; exit)')
+	return $ctid
+}

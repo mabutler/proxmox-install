@@ -10,8 +10,7 @@ URL="https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/qbitt
 # Optional: set an exit node via environment variable TAILSCALE_EXIT_NODE
 EXIT_NODE="${TAILSCALE_EXIT_NODE:-}"
 
-# Samba host for the storage share. Default to the host's primary IP or localhost.
-SMB_HOST="${SMB_HOST:-$(hostname -I 2>/dev/null | awk '{print $1}' || echo 127.0.0.1)}"
+SMB_HOST="127.0.0.1"
 SMB_SHARE="storage"
 SMB_MOUNTPOINT="/mnt/storage"
 
@@ -21,6 +20,12 @@ SYMLINKS=(
 	"/downloads:qbittorrent/downloads"
 	"/watch:qbittorrent/watch"
 )
+
+CTID=$(determine_ctid $NAME)
+if [[ -e $CTID ]]; then
+	bash -c "$(curl -fsSL "$url")"
+	CTID=$(determine_ctid $NAME)
+fi
 
 setup_generic_container "$NAME" "$URL" \
 	--smb-host "$SMB_HOST" --smb-share "$SMB_SHARE" --smb-mountpoint "$SMB_MOUNTPOINT" \
