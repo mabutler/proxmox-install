@@ -225,13 +225,24 @@ ensure_container_from_url() {
         info "LXC $name already exists"
     else
         info "Creating LXC $name from $url"
+        tmp=$(mktemp) || die "Could not create temp file"
         if command -v curl >/dev/null 2>&1; then
-            curl -fsSL "$url" | bash -s -- || die "Failed to run creation script from $url"
+            curl -fsSL "$url" -o "$tmp" || { rm -f "$tmp"; die "Failed to fetch $url"; }
         elif command -v wget >/dev/null 2>&1; then
-            wget -qO- "$url" | bash -s -- || die "Failed to run creation script from $url"
+            wget -qO "$tmp" "$url" || { rm -f "$tmp"; die "Failed to fetch $url"; }
         else
+            rm -f "$tmp"
             die "curl or wget required to fetch $url"
         fi
+
+        if command -v script >/dev/null 2>&1; then
+            script -q -c "bash \"$tmp\"" /dev/null || { rm -f "$tmp"; die "Failed to run creation script from $url"; }
+        else
+            warn "'script' not available — running without pty; script may fail if it requires a TTY"
+            bash "$tmp" || { rm -f "$tmp"; die "Failed to run creation script from $url"; }
+        fi
+
+        rm -f "$tmp"
     fi
 
     # return CTID on stdout (use tolerant lookup)
