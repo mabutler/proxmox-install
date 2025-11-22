@@ -14,11 +14,17 @@ else
 	exit 1
 fi
 
-if command -v script >/dev/null 2>&1; then
-	script -q -c "bash \"$tmp\"" /dev/null || { rm -f "$tmp"; echo "Failed to run $URL"; exit 1; }
-else
-	echo "'script' not available — running without pty; script may fail if it requires a TTY"
+# Prefer running the downloaded script directly when we have a TTY.
+if [ -t 0 ] || [ -t 1 ]; then
+	echo "Running downloaded script directly (no pty wrapper)"
 	bash "$tmp" || { rm -f "$tmp"; echo "Failed to run $URL"; exit 1; }
+else
+	if command -v script >/dev/null 2>&1; then
+		script -q -c "bash \"$tmp\"" /dev/null || { rm -f "$tmp"; echo "Failed to run $URL"; exit 1; }
+	else
+		echo "'script' not available — running without pty; script may fail if it requires a TTY"
+		bash "$tmp" || { rm -f "$tmp"; echo "Failed to run $URL"; exit 1; }
+	fi
 fi
 
 rm -f "$tmp"

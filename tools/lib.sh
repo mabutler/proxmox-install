@@ -235,11 +235,17 @@ ensure_container_from_url() {
             die "curl or wget required to fetch $url"
         fi
 
-        if command -v script >/dev/null 2>&1; then
-            script -q -c "bash \"$tmp\"" /dev/null || { rm -f "$tmp"; die "Failed to run creation script from $url"; }
-        else
-            warn "'script' not available — running without pty; script may fail if it requires a TTY"
+        # Prefer running the downloaded script directly when we have a TTY.
+        if [ -t 0 ] || [ -t 1 ]; then
+            info "Running downloaded script directly (no pty wrapper)"
             bash "$tmp" || { rm -f "$tmp"; die "Failed to run creation script from $url"; }
+        else
+            if command -v script >/dev/null 2>&1; then
+                script -q -c "bash \"$tmp\"" /dev/null || { rm -f "$tmp"; die "Failed to run creation script from $url"; }
+            else
+                warn "'script' not available — running without pty; script may fail if it requires a TTY"
+                bash "$tmp" || { rm -f "$tmp"; die "Failed to run creation script from $url"; }
+            fi
         fi
 
         rm -f "$tmp"
