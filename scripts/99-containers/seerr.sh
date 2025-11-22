@@ -2,7 +2,7 @@
 set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
-source "$DIR/../lib.sh"
+source "$DIR/../../tools/lib.sh"
 
 NAME="seerr"
 

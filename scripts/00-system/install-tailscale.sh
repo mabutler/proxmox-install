@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Load helpers
 DIR="$(cd "$(dirname "$0")" && pwd)"
-source "$DIR/../lib.sh"
+source "$DIR/../../tools/lib.sh"
 
 require_root
 
