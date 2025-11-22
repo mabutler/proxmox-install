@@ -1,15 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Load helpers
+DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$DIR/../lib.sh"
+
 export DEBIAN_FRONTEND=noninteractive
 
-PACKAGES="vim tmux git mergerfs inxi snapraid samba openssl"
+PACKAGES=(vim tmux git mergerfs inxi snapraid samba openssl)
 
-for pkg in $PACKAGES; do
+missing=()
+for pkg in "${PACKAGES[@]}"; do
     if ! dpkg -s "$pkg" >/dev/null 2>&1; then
-        apt-get update -qq
-        apt-get install -y "$pkg"
+        missing+=("$pkg")
     else
-        echo "$pkg is already installed"
+        info "$pkg is already installed"
     fi
 done
+
+if [ ${#missing[@]} -gt 0 ]; then
+    info "Installing packages: ${missing[*]}"
+    apt-get update -qq
+    apt-get install -y "${missing[@]}"
+fi
