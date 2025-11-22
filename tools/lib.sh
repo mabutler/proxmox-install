@@ -50,7 +50,7 @@ setup_samba_in_ct() {
         pct exec "$ctid" -- bash -c "cat > /root/.smbcredentials <<EOF
             username=smbwriter
             password=${SAMBA_WRITER_PASSWORD}
-            EOF
+EOF
             chmod 600 /root/.smbcredentials"
     fi
 
