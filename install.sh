@@ -30,7 +30,13 @@ fi
 while IFS= read -r -d '' module; do
 	modname="$(basename "$module")"
 	log "Running module: $module"
-	bash "$module" 2>&1 | tee "$LOG_DIR/${modname}.log"
+	if command -v script >/dev/null 2>&1; then
+		# Run module under a pseudoterminal so interactive installers that
+		# require a TTY behave the same as when executed directly.
+		script -q -c "bash \"$module\"" /dev/null 2>&1 | tee "$LOG_DIR/${modname}.log"
+	else
+		bash "$module" 2>&1 | tee "$LOG_DIR/${modname}.log"
+	fi
 	status=${PIPESTATUS[0]}
 
 	if [ "$status" -ne 0 ]; then
