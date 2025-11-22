@@ -47,7 +47,11 @@ setup_samba_in_ct() {
     if [ -z "${SAMBA_WRITER_PASSWORD:-}" ]; then
         warn "SAMBA_WRITER_PASSWORD not set on host; cannot create credentials inside CT"
     else
-        pct exec "$ctid" -- bash -c "cat > /root/.smbcredentials <<'EOF'\nusername=smbwriter\npassword=${SAMBA_WRITER_PASSWORD}\nEOF\nchmod 600 /root/.smbcredentials"
+        pct exec "$ctid" -- bash -c "cat > /root/.smbcredentials <<EOF
+            username=smbwriter
+            password=${SAMBA_WRITER_PASSWORD}
+            EOF
+            chmod 600 /root/.smbcredentials"
     fi
 
     pct exec "$ctid" -- bash -c "mkdir -p /mnt/storage"

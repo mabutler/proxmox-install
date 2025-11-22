@@ -5,5 +5,5 @@ fi
 
 export TAILSCALE_EXIT_NODE="tailscale-exit-node.example.com"
 
-local TAILSCALE_KEY_FILE="~/tailscale-key"
+local TAILSCALE_KEY_FILE="/root/tailscale-key"
 export TAILSCALE_KEY=$(<"$TAILSCALE_KEY_FILE")
