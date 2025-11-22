@@ -76,7 +76,7 @@ create_symlinks_in_ct() {
 }
 
 determine_ctid() {
-	ctid=$(pct list | awk -v n="$1" '$3==n{print $1; exit)')
+	ctid=$(pct list | awk -v n="$1" '$3==n{print $1}; exit)')
 	return $ctid
 }
 
