@@ -28,12 +28,15 @@ ensure_command pct
 
 get_ctid_by_name() {
     local name=$1
-    pct list 2>/dev/null | awk -v n="$name" '$0 ~ (" " n "($| )") {print $1; exit}' || true
+    # Match the container name (last column) case-insensitively to avoid
+    # false negatives when callers use different capitalization.
+    pct list 2>/dev/null | awk -v n="$name" 'BEGIN{ln=tolower(n)} { if (tolower($NF)==ln) {print $1; exit} }' || true
 }
 
 container_exists() {
     local name=$1
-    if pct list 2>/dev/null | awk -v n="$name" '$0 ~ (" " n "($| )") {exit 0} END{exit 1}'; then
+    # Check last column (name) case-insensitively.
+    if pct list 2>/dev/null | awk -v n="$name" 'BEGIN{ln=tolower(n)} { if (tolower($NF)==ln) {exit 0} } END{exit 1}'; then
         return 0
     fi
     return 1
