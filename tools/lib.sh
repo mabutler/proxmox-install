@@ -6,10 +6,7 @@ info()  { printf '%s | INFO  | %s\n' "$(date -Iseconds)" "$*"; }
 warn()  { printf '%s | WARN  | %s\n' "$(date -Iseconds)" "$*"; }
 die()   { printf '%s | ERROR | %s\n' "$(date -Iseconds)" "$*"; exit 1; }
 
-# Repo layout helpers
-# REPO_ROOT is the repository root (scripts/ is expected to be under it)
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-TOOLS_DIR="${TOOLS_DIR:-$REPO_ROOT/tools}"
+TOOLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 install_tailscale_in_ct() {
     local ctid=$1
