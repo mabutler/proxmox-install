@@ -14,5 +14,5 @@ SYMLINKS=(
 	"watch:qbittorrent/watch"
 )
 
-install_app_in_ct "qbittorrent" "$URL" SYMLINKS[@] "$EXIT_NODE"
+install_app_in_ct "qbittorrent" "$URL" SYMLINKS[@]
 enable_tailscale_exit_node "qbittorrent"
