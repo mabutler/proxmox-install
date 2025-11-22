@@ -3,28 +3,11 @@ set -euo pipefail
 
 # Run post-pve-install script from community-scripts (wget or curl)
 URL="https://github.com/community-scripts/ProxmoxVE/raw/main/tools/pve/post-pve-install.sh"
-tmp=$(mktemp) || { echo "Could not create temp file"; exit 1; }
 if command -v curl >/dev/null 2>&1; then
-	curl -fsSL "$URL" -o "$tmp" || { rm -f "$tmp"; echo "Failed to fetch $URL"; exit 1; }
+	bash -c "$(curl -fsSL "$URL")" || { echo "Failed to run $URL"; exit 1; }
 elif command -v wget >/dev/null 2>&1; then
-	wget -qO "$tmp" "$URL" || { rm -f "$tmp"; echo "Failed to fetch $URL"; exit 1; }
+	bash -c "$(wget -qO- "$URL")" || { echo "Failed to run $URL"; exit 1; }
 else
-	rm -f "$tmp"
 	echo "curl or wget required to fetch $URL"
 	exit 1
 fi
-
-# Prefer running the downloaded script directly when we have a TTY.
-if [ -t 0 ] || [ -t 1 ]; then
-	echo "Running downloaded script directly (no pty wrapper)"
-	bash "$tmp" || { rm -f "$tmp"; echo "Failed to run $URL"; exit 1; }
-else
-	if command -v script >/dev/null 2>&1; then
-		script -q -c "bash \"$tmp\"" /dev/null || { rm -f "$tmp"; echo "Failed to run $URL"; exit 1; }
-	else
-		echo "'script' not available — running without pty; script may fail if it requires a TTY"
-		bash "$tmp" || { rm -f "$tmp"; echo "Failed to run $URL"; exit 1; }
-	fi
-fi
-
-rm -f "$tmp"

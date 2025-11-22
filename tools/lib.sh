@@ -225,30 +225,16 @@ ensure_container_from_url() {
         info "LXC $name already exists"
     else
         info "Creating LXC $name from $url"
-        tmp=$(mktemp) || die "Could not create temp file"
+        # Execute the remote creation script directly via command substitution
+        # using the form requested by the user. This will spawn a new bash
+        # process which executes the fetched script content.
         if command -v curl >/dev/null 2>&1; then
-            curl -fsSL "$url" -o "$tmp" || { rm -f "$tmp"; die "Failed to fetch $url"; }
+            bash -c "$(curl -fsSL "$url")" || die "Failed to run creation script from $url"
         elif command -v wget >/dev/null 2>&1; then
-            wget -qO "$tmp" "$url" || { rm -f "$tmp"; die "Failed to fetch $url"; }
+            bash -c "$(wget -qO- "$url")" || die "Failed to run creation script from $url"
         else
-            rm -f "$tmp"
             die "curl or wget required to fetch $url"
         fi
-
-        # Prefer running the downloaded script directly when we have a TTY.
-        if [ -t 0 ] || [ -t 1 ]; then
-            info "Running downloaded script directly (no pty wrapper)"
-            bash "$tmp" || { rm -f "$tmp"; die "Failed to run creation script from $url"; }
-        else
-            if command -v script >/dev/null 2>&1; then
-                script -q -c "bash \"$tmp\"" /dev/null || { rm -f "$tmp"; die "Failed to run creation script from $url"; }
-            else
-                warn "'script' not available — running without pty; script may fail if it requires a TTY"
-                bash "$tmp" || { rm -f "$tmp"; die "Failed to run creation script from $url"; }
-            fi
-        fi
-
-        rm -f "$tmp"
     fi
 
     # return CTID on stdout (use tolerant lookup)
