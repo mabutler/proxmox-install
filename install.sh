@@ -33,7 +33,15 @@ while IFS= read -r -d '' module; do
 	if command -v script >/dev/null 2>&1; then
 		# Run module under a pseudoterminal so interactive installers that
 		# require a TTY behave the same as when executed directly.
-		script -q -c "bash \"$module\"" /dev/null 2>&1 | tee "$LOG_DIR/${modname}.log"
+		# Prevent `script` from reading the loop's stdin (process substitution)
+		# by wiring its stdin to the controlling terminal when available,
+		# otherwise to /dev/null.
+		if exec 3</dev/tty 2>/dev/null; then
+			script -q -c "bash \"$module\"" /dev/null <&3 2>&1 | tee "$LOG_DIR/${modname}.log"
+			exec 3<&-
+		else
+			script -q -c "bash \"$module\"" /dev/null < /dev/null 2>&1 | tee "$LOG_DIR/${modname}.log"
+		fi
 	else
 		bash "$module" 2>&1 | tee "$LOG_DIR/${modname}.log"
 	fi
