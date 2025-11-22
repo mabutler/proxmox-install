@@ -2,10 +2,10 @@
 set -euo pipefail
 
 # Load repo helpers if available
-LIB_FILE="$(cd "$(dirname "$0")/../.." && pwd)/scripts/lib.sh"
-if [ -f "$LIB_FILE" ]; then
+TOOLS_LIB="$(cd "$(dirname "$0")/../.." && pwd)/tools/lib.sh"
+if [ -f "$TOOLS_LIB" ]; then
     # shellcheck source=/dev/null
-    source "$LIB_FILE"
+    source "$TOOLS_LIB"
 fi
 
 STORAGE_DIR="/mnt/storage/media"

@@ -12,10 +12,18 @@ log() {
 MODULE_DIR="$(cd "$(dirname "$0")" && pwd)"
 SECRETS_FILE="$MODULE_DIR/tools/secrets.sh"
 export TOOLS_DIR="$MODULE_DIR/tools"
-LIB_FILE="$MODULE_DIR/scripts/lib.sh"
-if [ -f "$LIB_FILE" ]; then
+# Prefer the canonical helper in `tools/lib.sh` (scripts/lib.sh is deprecated)
+TOOLS_LIB="$MODULE_DIR/tools/lib.sh"
+if [ -f "$TOOLS_LIB" ]; then
 	# shellcheck source=/dev/null
-	source "$LIB_FILE"
+	source "$TOOLS_LIB"
+else
+	# Fallback for older checkouts that still have scripts/lib.sh
+	LIB_FILE="$MODULE_DIR/scripts/lib.sh"
+	if [ -f "$LIB_FILE" ]; then
+		# shellcheck source=/dev/null
+		source "$LIB_FILE"
+	fi
 fi
 
 log "Starting proxmox setup."

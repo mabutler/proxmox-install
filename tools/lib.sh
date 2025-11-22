@@ -28,15 +28,18 @@ ensure_command pct
 
 get_ctid_by_name() {
     local name=$1
-    # Match the container name (last column) case-insensitively to avoid
-    # false negatives when callers use different capitalization.
-    pct list 2>/dev/null | awk -v n="$name" 'BEGIN{ln=tolower(n)} { if (tolower($NF)==ln) {print $1; exit} }' || true
+    # Very simple: if the provided name appears anywhere in the `pct list`
+    # output (case-insensitive), return the first matching CTID. This follows
+    # the user's request to treat any occurrence as evidence the container
+    # exists.
+    pct list 2>/dev/null | tr -d '\r' | grep -iF -- "$name" | head -n1 | awk '{print $1}' || true
 }
 
 container_exists() {
     local name=$1
-    # Check last column (name) case-insensitively.
-    if pct list 2>/dev/null | awk -v n="$name" 'BEGIN{ln=tolower(n)} { if (tolower($NF)==ln) {exit 0} } END{exit 1}'; then
+    # Very simple existence check: true if the name string appears anywhere
+    # in `pct list` output (case-insensitive).
+    if pct list 2>/dev/null | tr -d '\r' | grep -iF -- "$name" >/dev/null; then
         return 0
     fi
     return 1
