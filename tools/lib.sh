@@ -97,13 +97,13 @@ register_idmaps_for_ct() {
         # Range before this UID
         if (( uid > prev_end )); then
             range_len=$((uid - prev_end))
-            echo "lxc.idmap = u ${prev_end} $((100000 + prev_end)) ${range_len}"
-            echo "lxc.idmap = g ${prev_end} $((100000 + prev_end)) ${range_len}"
+            echo "lxc.idmap = u ${prev_end} $((100000 + prev_end)) ${range_len}" >> "$conf"
+            echo "lxc.idmap = g ${prev_end} $((100000 + prev_end)) ${range_len}" >> "$conf"
         fi
 
         # The special mapped user
-        echo "lxc.idmap = u ${uid} ${host_uid_base} 1"
-        echo "lxc.idmap = g ${uid} ${host_uid_base} 1"
+        echo "lxc.idmap = u ${uid} ${host_uid_base} 1" >> "$conf"
+        echo "lxc.idmap = g ${uid} ${host_uid_base} 1" >> "$conf"
 
         prev_end=$((uid + 1))
     done
@@ -111,8 +111,8 @@ register_idmaps_for_ct() {
     # Trailing range after last mapped UID
     if (( prev_end <= CT_MAX )); then
         range_len=$((CT_MAX - prev_end + 1))
-        echo "lxc.idmap = u ${prev_end} $((100000 + prev_end)) ${range_len}"
-        echo "lxc.idmap = g ${prev_end} $((100000 + prev_end)) ${range_len}"
+        echo "lxc.idmap = u ${prev_end} $((100000 + prev_end)) ${range_len}" >> "$conf"
+        echo "lxc.idmap = g ${prev_end} $((100000 + prev_end)) ${range_len}" >> "$conf"
     fi
 }
 
