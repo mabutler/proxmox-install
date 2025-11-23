@@ -14,7 +14,7 @@ MOUNTS=(
 	"watch:qbittorrent/watch"
 )
 
-UIDs=(
+UIDS=(
 	100
 )
 
