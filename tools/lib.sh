@@ -102,8 +102,8 @@ register_idmaps_for_ct() {
         fi
 
         # The special mapped user
-        echo "lxc.idmap = u ${uid} ${HOST_UID} 1"
-        echo "lxc.idmap = g ${uid} ${HOST_UID} 1"
+        echo "lxc.idmap = u ${uid} ${host_uid_base} 1"
+        echo "lxc.idmap = g ${uid} ${host_uid_base} 1"
 
         prev_end=$((uid + 1))
     done
