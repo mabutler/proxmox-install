@@ -54,8 +54,8 @@ register_idmaps_for_ct() {
     local ctid=$1
     shift
     local conf="/etc/pve/lxc/${ctid}.conf"
-    local host_uid_base=${HOMELAB_UID}
-    local host_gid_base=${HOMELAB_GID}
+    local host_uid_base=$(id -u "homelab")
+    local host_gid_base=$(getent group "homelab" | cut -d: -f3)
 
     MAP_UIDS=("$@")\
 
