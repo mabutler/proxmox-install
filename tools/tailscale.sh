@@ -56,4 +56,4 @@ pct set "$CTID" -tags "$TAGS"
 msg_ok "Tailscale installed on CT $CTID"
 pct stop "$CTID" >/dev/null
 pct start "$CTID" >/dev/null
-pct exec "$CTID" -- tailscale up --authkey="${TAILSCALE_KEY}" >/dev/null 2>&1
+pct exec "$CTID" -- tailscale up --auth-key="${TAILSCALE_KEY}" >/dev/null 2>&1

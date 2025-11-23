@@ -132,7 +132,7 @@ install_app_in_ct() {
 		ctid=$(determine_ctid $name)
 	fi
 
-	install_tailscale_in_ct "$ctid" true
+	install_tailscale_in_ct "$ctid"
 
 	create_mounts_in_ct "$ctid" "${symlinks[@]}"
 		

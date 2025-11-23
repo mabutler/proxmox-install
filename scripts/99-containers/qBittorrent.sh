@@ -9,9 +9,8 @@ URL="https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/qbitt
 
 # Symlinks inside the container: format app_path:share_subdir
 MOUNTS=(
-	"config:qbittorrent/config"
-	"downloads:qbittorrent/downloads"
-	"watch:qbittorrent/watch"
+	"/root/downloads:qbittorrent/downloads"
+	"/root/watch:qbittorrent/watch"
 )
 
 UIDS=(
