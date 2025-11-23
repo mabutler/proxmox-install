@@ -83,7 +83,7 @@ register_idmaps_for_ct() {
     mapfile -t MAP_UIDS < <(printf "%s\n" "${MAP_UIDS[@]}" | sort -n | uniq)
 
     echo "# --- BEGIN GENERATED UID/GID MAPPINGS ---"
-    echo "# Mapping CT UIDs → host UID ${HOST_UID}"
+    echo "# Mapping CT UIDs → host UID ${host_uid_base}"
     echo "# Split-range mapping covering entire 0–65535 space"
 
     prev_end=$CT_MIN
