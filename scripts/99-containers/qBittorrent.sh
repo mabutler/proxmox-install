@@ -14,5 +14,9 @@ MOUNTS=(
 	"watch:qbittorrent/watch"
 )
 
-install_app_in_ct "qbittorrent" "$URL" MOUNTS[@]
+UIDs=(
+	100
+)
+
+install_app_in_ct "qbittorrent" "$URL" MOUNTS[@] UIDs[@]S
 enable_tailscale_exit_node "qbittorrent"

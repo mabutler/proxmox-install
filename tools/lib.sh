@@ -48,6 +48,74 @@ create_mounts_in_ct() {
     done
 }
 
+# Register lxc idmap lines for a container config
+# Usage: register_idmaps_for_ct <ctid> "lxc.idmap = u 0 100000 65536" "lxc.idmap = g 0 100000 65536"
+register_idmaps_for_ct() {
+    local ctid=$1
+    shift
+    local conf="/etc/pve/lxc/${ctid}.conf"
+    local host_uid_base=${HOMELAB_UID}
+    local host_gid_base=${HOMELAB_GID}
+
+    MAP_UIDS=("$@")\
+
+    if [ -z "$ctid" ]; then
+        die "register_idmaps_for_ct requires a ctid"
+    fi
+
+    if [ ! -f "$conf" ]; then
+        die "Container config $conf not found"
+    fi
+
+    # Remove any existing lxc.idmap lines to avoid duplicates
+    awk '!/^lxc.idmap\s*=/' "$conf" > "${conf}.tmp" && mv "${conf}.tmp" "$conf"
+
+    for idline in "$@"; do
+        echo "$idline" >> "$conf"
+        info "Wrote idmap to $conf: $idline"
+    done
+
+    # Container UID space for unprivileged LXC
+    CT_MIN=0
+    CT_MAX=65535
+
+    # Sort and deduplicate the UIDs that need special mapping
+    mapfile -t MAP_UIDS < <(printf "%s\n" "${MAP_UIDS[@]}" | sort -n | uniq)
+
+    echo "# --- BEGIN GENERATED UID/GID MAPPINGS ---"
+    echo "# Mapping CT UIDs → host UID ${HOST_UID}"
+    echo "# Split-range mapping covering entire 0–65535 space"
+
+    prev_end=$CT_MIN
+
+    for uid in "${MAP_UIDS[@]}"; do
+        if (( uid < CT_MIN || uid > CT_MAX )); then
+            echo "Error: UID ${uid} out of allowed container range 0–65535" >&2
+            exit 1
+        fi
+
+        # Range before this UID
+        if (( uid > prev_end )); then
+            range_len=$((uid - prev_end))
+            echo "lxc.idmap = u ${prev_end} $((100000 + prev_end)) ${range_len}"
+            echo "lxc.idmap = g ${prev_end} $((100000 + prev_end)) ${range_len}"
+        fi
+
+        # The special mapped user
+        echo "lxc.idmap = u ${uid} ${HOST_UID} 1"
+        echo "lxc.idmap = g ${uid} ${HOST_UID} 1"
+
+        prev_end=$((uid + 1))
+    done
+
+    # Trailing range after last mapped UID
+    if (( prev_end <= CT_MAX )); then
+        range_len=$((CT_MAX - prev_end + 1))
+        echo "lxc.idmap = u ${prev_end} $((100000 + prev_end)) ${range_len}"
+        echo "lxc.idmap = g ${prev_end} $((100000 + prev_end)) ${range_len}"
+    fi
+}
+
 determine_ctid() {
 	pct list | awk -v n="$1" '$3==n { print $1; exit }'
 }
@@ -56,7 +124,7 @@ install_app_in_ct() {
     local name=$1        # container name
     local url=$2         # install script URL
     local symlinks=("${!3}")  # array of symlinks (pass as name[@])
-    local exit_node="${4:-}"   # optional Tailscale exit node
+    local uid_maps=("${!4}")   # optional array of uid maps (pass as name[@])
 
 	local ctid=$(determine_ctid $name)
 	if [[ -z $ctid ]]; then
@@ -65,10 +133,6 @@ install_app_in_ct() {
 	fi
 
 	install_tailscale_in_ct "$ctid" true
-
-	if [ -n "$exit_node" ]; then
-		configure_tailscale_exit_node "$ctid"
-	fi
 
 	create_mounts_in_ct "$ctid" "${symlinks[@]}"
 		
