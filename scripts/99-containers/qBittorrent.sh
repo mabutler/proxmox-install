@@ -8,11 +8,11 @@ NAME="qbittorrent"
 URL="https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/qbittorrent.sh"
 
 # Symlinks inside the container: format app_path:share_subdir
-SYMLINKS=(
+MOUNTS=(
 	"config:qbittorrent/config"
 	"downloads:qbittorrent/downloads"
 	"watch:qbittorrent/watch"
 )
 
-install_app_in_ct "qbittorrent" "$URL" SYMLINKS[@]
+install_app_in_ct "qbittorrent" "$URL" MOUNTS[@]
 enable_tailscale_exit_node "qbittorrent"

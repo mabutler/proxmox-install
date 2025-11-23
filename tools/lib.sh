@@ -30,51 +30,21 @@ enable_tailscale_exit_node() {
     fi
 }
 
-setup_samba_in_ct() {
-    local ctid=$1
-
-    info "Ensuring Samba share is mounted inside CT $ctid"
-
-    pct exec "$ctid" -- bash -c '
-        set -euo pipefail
-        export DEBIAN_FRONTEND=noninteractive
-        if ! dpkg -s cifs-utils >/dev/null 2>&1; then
-            apt-get update -qq
-            apt-get install -y cifs-utils >/dev/null
-        fi
-    '
-
-    if [ -z "${SAMBA_WRITER_PASSWORD:-}" ]; then
-        warn "SAMBA_WRITER_PASSWORD not set on host; cannot create credentials inside CT"
-    else
-        pct exec "$ctid" -- bash -c "cat > /root/.smbcredentials <<EOF
-            username=smbwriter
-            password=${SAMBA_WRITER_PASSWORD}
-EOF
-            chmod 600 /root/.smbcredentials"
-    fi
-
-    pct exec "$ctid" -- bash -c "mkdir -p /mnt/storage"
-
-    local hostIp=$(ip -4 -o addr show dev vmbr0 | awk '{print $4}' | cut -d/ -f1)
-    pct exec "$ctid" -- bash -c "
-    grep -q \"//$hostIp/storage\" /etc/fstab \
-        || echo \"//$hostIp/storage /mnt/storage cifs credentials=/root/.smbcredentials,iocharset=utf8,file_mode=0775,dir_mode=0775,vers=3.0 0 0\" >> /etc/fstab
-    "
-    pct exec "$ctid" -- mount -a
-}
-
-create_symlinks_in_ct() {
+create_mounts_in_ct() {
     local ctid=$1
     shift
-    local links=("$@")
+    local mounts=("$@")
 
-    for l in "${links[@]}"; do
-        IFS=':' read -r app_path share_subdir <<<"$l"
-        local target
-        target="/mnt/storage/${share_subdir}"
-        info "Creating target and symlink inside CT $ctid: $app_path -> $target"
-        pct exec "$ctid" -- bash -c "set -e; mkdir -p \"${target}\"; mkdir -p \"$(dirname \"$app_path\")\"; if [ -L \"${app_path}\" ] || [ -e \"${app_path}\" ]; then rm -rf \"${app_path}\"; fi; ln -s \"${target}\" \"${app_path}\""
+    local mp_index=0
+    for l in "${mounts[@]}"; do
+        IFS=':' read -r container_path host_subdir <<<"$l"
+        local host_path="/mnt/storage/${host_subdir}"
+
+        mkdir -p "$host_path"
+
+        echo "mp${mp_index}: $host_path,mp=${container_path},backup=0,shift=1" >> "/etc/pve/lxc/${ctid}.conf"
+        info "Creating mount inside CT $ctid: $container_path -> $host_path"
+        mp_index=$((mp_index + 1))
     done
 }
 
@@ -100,9 +70,7 @@ install_app_in_ct() {
 		configure_tailscale_exit_node "$ctid"
 	fi
 
-	setup_samba_in_ct "$ctid"
-
-	create_symlinks_in_ct "$ctid" "${symlinks[@]}"
+	create_mounts_in_ct "$ctid" "${symlinks[@]}"
 		
 	echo "$name container setup completed (CT may still require 'tailscale up' inside the CT)."
 }
