@@ -132,9 +132,13 @@ install_app_in_ct() {
 		ctid=$(determine_ctid $name)
 	fi
 
+	create_mounts_in_ct "$ctid" "${symlinks[@]}"
+
+    if [ "${#uid_maps[@]}" -gt 0 ]; then
+        register_idmaps_for_ct "$ctid" "${uid_maps[@]}"
+    fi
+
 	install_tailscale_in_ct "$ctid"
 
-	create_mounts_in_ct "$ctid" "${symlinks[@]}"
-		
 	echo "$name container setup completed (CT may still require 'tailscale up' inside the CT)."
 }
