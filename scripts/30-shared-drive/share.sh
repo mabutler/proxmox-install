@@ -21,7 +21,7 @@ fi
 ## Create a dedicated homelab user to be the host-side base for unprivileged LXC mappings
 # Default UID/GID base used for mapping guest uids/gids -> host uids/gids
 HOMELAB_USER=${HOMELAB_USER:-homelab}
-HOMELAB_UID=${HOMELAB_UID:-10000}
+HOMELAB_UID=${HOMELAB_UID:-100000}
 HOMELAB_GID=${HOMELAB_GID:-${HOMELAB_UID}}
 
 info "Ensuring homelab user '$HOMELAB_USER' exists with UID/GID $HOMELAB_UID/$HOMELAB_GID"
