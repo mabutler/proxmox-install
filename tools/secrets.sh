@@ -3,7 +3,7 @@ if [ -z "${SAMBA_WRITER_PASSWORD:-}" ]; then
 	export SAMBA_WRITER_PASSWORD
 fi
 
-export TAILSCALE_EXIT_NODE="tailscale-exit-node.example.com"
+export TAILSCALE_EXIT_NODE="100.86.172.69"
 
 TAILSCALE_KEY_FILE="/root/tailscale-key"
 export TAILSCALE_KEY=$(<"$TAILSCALE_KEY_FILE")

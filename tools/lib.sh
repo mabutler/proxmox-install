@@ -14,7 +14,7 @@ install_tailscale_in_ct() {
 }
 
 enable_tailscale_exit_node() {
-    local ctid=determine_ctid "$1"
+    local ctid=$(determine_ctid "$1")
     if [ -z $ctid ]; then
         die "Container $1 not found for enabling Tailscale exit node"
     fi
@@ -42,7 +42,7 @@ create_mounts_in_ct() {
 
         mkdir -p "$host_path"
 
-        echo "mp${mp_index}: $host_path,mp=${container_path},backup=0,shift=1" >> "/etc/pve/lxc/${ctid}.conf"
+        echo "mp${mp_index}: $host_path,mp=${container_path},backup=0" >> "/etc/pve/lxc/${ctid}.conf"
         info "Creating mount inside CT $ctid: $container_path -> $host_path"
         mp_index=$((mp_index + 1))
     done
