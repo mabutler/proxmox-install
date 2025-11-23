@@ -18,5 +18,5 @@ UIDS=(
 	100
 )
 
-install_app_in_ct "qbittorrent" "$URL" MOUNTS[@] UIDs[@]S
+install_app_in_ct "qbittorrent" "$URL" MOUNTS[@] UIDS[@]
 enable_tailscale_exit_node "qbittorrent"
