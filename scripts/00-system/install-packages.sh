@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PACKAGES=(vim tmux git  inxi  openssl rclone less tailscale)
+PACKAGES=(vim tmux git cronie inxi  openssl rclone less tailscale)
 #mergerfs snapraid
 pacman -Sy --noconfirm "${PACKAGES[@]}"
