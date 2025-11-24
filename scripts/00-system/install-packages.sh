@@ -7,7 +7,7 @@ source "$DIR/../../tools/lib.sh"
 
 export DEBIAN_FRONTEND=noninteractive
 
-PACKAGES=(vim tmux git mergerfs inxi snapraid openssl rclone)
+PACKAGES=(vim tmux git mergerfs inxi snapraid openssl rclone less tailscale)
 
 missing=()
 for pkg in "${PACKAGES[@]}"; do
