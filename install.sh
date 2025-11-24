@@ -9,31 +9,7 @@ log() {
 	echo "$(date -Iseconds) | $1" | tee -a "$LOG_DIR/setup.log"
 }
 
-MODULE_DIR="$(cd "$(dirname "$0")" && pwd)"
-SECRETS_FILE="$MODULE_DIR/tools/secrets.sh"
-export TOOLS_DIR="$MODULE_DIR/tools"
-# Prefer the canonical helper in `tools/lib.sh` (scripts/lib.sh is deprecated)
-TOOLS_LIB="$MODULE_DIR/tools/lib.sh"
-if [ -f "$TOOLS_LIB" ]; then
-	# shellcheck source=/dev/null
-	source "$TOOLS_LIB"
-else
-	# Fallback for older checkouts that still have scripts/lib.sh
-	LIB_FILE="$MODULE_DIR/scripts/lib.sh"
-	if [ -f "$LIB_FILE" ]; then
-		# shellcheck source=/dev/null
-		source "$LIB_FILE"
-	fi
-fi
-
 log "Starting proxmox setup."
-
-if [ -f "$SECRETS_FILE" ]; then
-	# shellcheck source=/dev/null
-	source "$SECRETS_FILE"
-else
-	warn "Secrets file not found: $SECRETS_FILE (continuing)"
-fi
 
 while IFS= read -r -d '' module; do
 	modname="$(basename "$module")"
