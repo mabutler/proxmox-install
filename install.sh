@@ -9,6 +9,7 @@ log() {
 	echo "$(date -Iseconds) | $1" | tee -a "$LOG_DIR/setup.log"
 }
 
+MODULE_DIR="$(cd "$(dirname "$0")" && pwd)"
 log "Starting proxmox setup."
 
 while IFS= read -r -d '' module; do
