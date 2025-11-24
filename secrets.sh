@@ -1,0 +1,3 @@
+SERVER_HOST="ultra"
+SERVER_USER="unquote1581"
+SERVER_PORT="22"
