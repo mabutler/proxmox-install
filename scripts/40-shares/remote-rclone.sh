@@ -48,7 +48,7 @@ echo
 
 # Create a script that will run as loki user
 SETUP_SCRIPT=$(mktemp)
-chmod o+x "$SETUP_SCRIPT"
+chmod o+rx "$SETUP_SCRIPT"
 
 cat > "$SETUP_SCRIPT" << 'LOKI_SCRIPT_END'
 #!/bin/bash
