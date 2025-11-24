@@ -11,7 +11,7 @@ USERNAME="loki"
 USER_HOME="/home/$USERNAME"
 
 # Configuration - EDIT THESE VALUES
-SERVER_HOST="ultra"
+SERVER_HOST="delia.usbx.me"
 SERVER_USER="unquote1581"
 SERVER_PORT="22"
 REMOTE_DOWNLOADS_PATH="/path/to/server/downloads"
