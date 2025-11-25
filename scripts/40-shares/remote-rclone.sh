@@ -11,9 +11,11 @@ USERNAME="loki"
 USER_HOME="/home/$USERNAME"
 
 # Configuration - EDIT THESE VALUES
-SERVER_HOST="delia.usbx.me"
-SERVER_USER="unquote1581"
-SERVER_PORT="22"
+# Prompt for server connection details
+read -p "Enter server hostname or IP: " SERVER_HOST
+read -p "Enter SSH username: " SERVER_USER
+read -p "Enter SSH port [22]: " SERVER_PORT
+SERVER_PORT=${SERVER_PORT:-22}  # Default to 22 if empty
 REMOTE_DOWNLOADS_PATH="downloads/qbittorrent/completed"
 REMOTE_TORRENTS_PATH="/path/to/server/torrents"
 LOCAL_MEDIA_PATH="/mnt/storage/media"
