@@ -12,7 +12,7 @@ if ! command -v paru &> /dev/null; then
     echo "Installing paru..."
 
     # Clone and build as non-root user
-    sudo -u "nobody" bash <<'EOF'
+    runuser -u "nobody" -- bash -c <<'EOF'
     git clone https://aur.archlinux.org/paru.git /tmp/paru
     cd /tmp/paru
     makepkg -s --noconfirm
