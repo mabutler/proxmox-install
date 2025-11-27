@@ -10,11 +10,16 @@ pacman -S --needed --noconfirm base-devel git
 
 if ! command -v paru &> /dev/null; then
     echo "Installing paru..."
-    
+
+    # Clone and build as non-root user
+    sudo -u "nobody" bash <<'EOF'
     git clone https://aur.archlinux.org/paru.git /tmp/paru
     cd /tmp/paru
-    makepkg -si --noconfirm
-    cd -
+    makepkg -s --noconfirm
+EOF
+
+    # Install the built package as root
+    pacman -U --noconfirm /tmp/paru/paru-*.pkg.tar.zst
     rm -rf /tmp/paru
 fi
 
