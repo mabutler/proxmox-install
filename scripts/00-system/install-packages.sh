@@ -15,7 +15,7 @@ if ! command -v paru &> /dev/null; then
     runuser -u "nobody" -- bash <<'EOF'
     git clone https://aur.archlinux.org/paru.git /tmp/paru
     cd /tmp/paru
-    makepkg -s --noconfirm
+    makepkg --noconfirm
 EOF
 
     # Install the built package as root
