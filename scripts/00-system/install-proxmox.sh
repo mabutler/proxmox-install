@@ -1,10 +1,11 @@
 # install proxmox
+# git clone https://github.com/mabutler/proxmox-install.git
 
 # remove proxmox subscription nag
 bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/tools/pve/post-pve-install.sh)"
 
 # install required packages for basic user requirements
-apt install git sudo zsh tmux vim snapraid mergerfs
+apt install git sudo zsh tmux vim snapraid mergerfs rclone
 
 # install tailscale
 curl -fsSL https://tailscale.com/install.sh | sh
